@@ -1,0 +1,44 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Candidatures — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-gray-900">Candidatures Enseignants</h1>
+    <span class="text-sm text-gray-500">{{ candidatures.count }} candidature(s)</span>
+</div>
+<div class="card mb-4">
+    <form method="get" class="flex flex-wrap gap-3 items-end">
+        <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Statut</label>
+            <select name="statut" class="input-field">
+                <option value="">Tous</option>
+                <option value="EN_ATTENTE" {% if filtre_statut == 'EN_ATTENTE' %}selected{% endif %}>En attente</option>
+                <option value="ACCEPTE" {% if filtre_statut == 'ACCEPTE' %}selected{% endif %}>Acceptées</option>
+                <option value="REFUSE" {% if filtre_statut == 'REFUSE' %}selected{% endif %}>Refusées</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-primary">Filtrer</button>
+    </form>
+</div>
+<div class="card overflow-x-auto">
+    <table>
+        <thead><tr><th>Candidat</th><th>Téléphone</th><th>Niveau</th><th>Matières</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for c in candidatures %}
+            <tr>
+                <td class="font-medium">{{ c.nom_complet }}</td>
+                <td>{{ c.telephone }}</td>
+                <td>{{ c.get_niveau_etude_display }}</td>
+                <td>{% for m in c.matieres_souhaitees.all %}<span class="badge badge-primary mr-1">{{ m.nom }}</span>{% endfor %}</td>
+                <td>{{ c.date_soumission|date:"d/m/Y" }}</td>
+                <td><span class="badge {% if c.statut == 'ACCEPTE' %}badge-success{% elif c.statut == 'REFUSE' %}badge-danger{% else %}badge-warning{% endif %}">{{ c.get_statut_display }}</span></td>
+                <td>
+                    <a href="{% url 'candidatures_comite:detail_comite' c.id %}" class="text-primary text-sm font-semibold hover:underline">Voir</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-gray-400 text-center py-8">Aucune candidature trouvée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

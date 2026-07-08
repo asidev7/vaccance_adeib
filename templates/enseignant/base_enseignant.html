@@ -1,0 +1,131 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Espace Enseignant — ADEIB{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0048AE',
+                        'primary-light': '#E8F0FA',
+                        'primary-dark': '#003580',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --color-primary: #0048AE;
+            --color-primary-light: #E8F0FA;
+            --color-primary-dark: #003580;
+        }
+        * { box-shadow: none !important; }
+        .btn-primary { background-color: #0048AE; color: white; border: 2px solid #0048AE; border-radius: 6px; padding: 0.5rem 1.25rem; font-weight: 600; font-size: 0.875rem; transition: background-color 0.2s; }
+        .btn-primary:hover { background-color: #003580; border-color: #003580; }
+        .btn-secondary { background-color: transparent; color: #0048AE; border: 2px solid #0048AE; border-radius: 6px; padding: 0.5rem 1.25rem; font-weight: 600; font-size: 0.875rem; }
+        .btn-secondary:hover { background-color: #E8F0FA; }
+        .card { background-color: white; border: 1px solid #E5E7EB; border-radius: 8px; padding: 1.5rem; }
+        .input-field { width: 100%; border: 2px solid #D1D5DB; border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+        .input-field:focus { outline: none; border-color: #0048AE; }
+        .badge { display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.125rem 0.75rem; font-size: 0.75rem; font-weight: 600; }
+        .badge-primary { background-color: #E8F0FA; color: #0048AE; }
+        .badge-success { background-color: #DCFCE7; color: #16A34A; }
+        .badge-warning { background-color: #FEF3C7; color: #D97706; }
+        .badge-danger { background-color: #FEE2E2; color: #DC2626; }
+        .stat-card { border-left: 4px solid #0048AE; padding: 1rem 1.25rem; background: white; border-radius: 0 6px 6px 0; border-top: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen font-sans antialiased">
+    <div class="min-h-screen flex flex-col">
+        <!-- Top bar -->
+        <header class="bg-white border-b-2 border-gray-200 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-primary font-extrabold text-lg">ADEIB</span>
+                <span class="hidden sm:inline text-gray-400 text-sm">|</span>
+                <span class="hidden sm:inline text-gray-600 text-sm">Espace Enseignant</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-sm text-gray-600 hidden sm:inline">{{ user.get_full_name|default:user.username }}</span>
+                <a href="{% url 'accounts_enseignant:enseignant_logout' %}" class="text-red-600 text-sm font-medium">Déconnexion</a>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-5xl mx-auto flex overflow-x-auto">
+                {% url 'enseignant:dashboard' as url_dash %}
+                <a href="{{ url_dash }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_dash %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Dashboard</a>
+                {% url 'enseignant:mon_qrcode' as url_qr %}
+                <a href="{{ url_qr }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_qr %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Mon QR Code</a>
+                {% url 'enseignant:mes_presences' as url_pres %}
+                <a href="{{ url_pres }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_pres %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Présences</a>
+                {% url 'enseignant:mes_salaires' as url_sal %}
+                <a href="{{ url_sal }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_sal %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Salaires</a>
+                {% url 'enseignant:profil' as url_prof %}
+                <a href="{{ url_prof }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_prof %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Profil</a>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="flex-1 max-w-5xl mx-auto w-full p-4 md:p-6">
+            {% if messages %}
+            <div class="space-y-2 mb-4">
+                {% for message in messages %}
+                <div class="px-4 py-3 rounded-md text-sm font-medium {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-300{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-300{% else %}bg-blue-50 text-blue-800 border border-blue-300{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Bottom nav mobile -->
+        <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t-2 border-gray-200 z-30">
+            <div class="flex justify-around px-1 py-1">
+                <a href="{% url 'enseignant:dashboard' %}" class="bottom-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    Accueil
+                </a>
+                <a href="{% url 'enseignant:mon_qrcode' %}" class="bottom-nav-link {% if request.resolver_match.url_name == 'mon_qrcode' %}active{% endif %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                    QR
+                </a>
+                <a href="{% url 'enseignant:mes_presences' %}" class="bottom-nav-link {% if request.resolver_match.url_name == 'mes_presences' %}active{% endif %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                    Présences
+                </a>
+                <a href="{% url 'enseignant:mes_salaires' %}" class="bottom-nav-link {% if request.resolver_match.url_name == 'mes_salaires' %}active{% endif %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>
+                    Salaire
+                </a>
+                <a href="{% url 'enseignant:profil' %}" class="bottom-nav-link {% if request.resolver_match.url_name == 'profil' %}active{% endif %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Profil
+                </a>
+            </div>
+        </nav>
+        <style>
+            .bottom-nav-link {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.125rem;
+                padding: 0.375rem 0.25rem;
+                color: #6B7280;
+                font-size: 0.625rem;
+                font-weight: 500;
+            }
+            .bottom-nav-link.active { color: #0048AE; }
+        </style>
+    </div>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

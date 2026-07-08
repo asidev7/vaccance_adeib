@@ -1,0 +1,45 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Dépenses — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-gray-900">Dépenses</h1>
+    <a href="{% url 'depenses:ajouter' %}" class="btn-primary text-sm">+ Ajouter</a>
+</div>
+<div class="card mb-4">
+    <form method="get" class="flex flex-wrap gap-3 items-end">
+        <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Catégorie</label>
+            <select name="categorie" class="input-field">
+                <option value="">Toutes</option>
+                <option value="FOURNITURES" {% if filtre_cat == 'FOURNITURES' %}selected{% endif %}>Fournitures</option>
+                <option value="LOGIQUE" {% if filtre_cat == 'LOGIQUE' %}selected{% endif %}>Logistique</option>
+                <option value="COMMUNICATION" {% if filtre_cat == 'COMMUNICATION' %}selected{% endif %}>Communication</option>
+                <option value="RESTAURATION" {% if filtre_cat == 'RESTAURATION' %}selected{% endif %}>Restauration</option>
+                <option value="AUTRE" {% if filtre_cat == 'AUTRE' %}selected{% endif %}>Autre</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-primary">Filtrer</button>
+    </form>
+</div>
+<div class="card overflow-x-auto">
+    <table>
+        <thead><tr><th>Libellé</th><th>Catégorie</th><th>Montant</th><th>Date</th><th>Justificatif</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for d in depenses %}
+            <tr>
+                <td class="font-medium">{{ d.libelle }}</td>
+                <td><span class="badge badge-primary">{{ d.get_categorie_display }}</span></td>
+                <td class="font-bold text-red-600">{{ d.montant }} FCFA</td>
+                <td>{{ d.date_depense|date:"d/m/Y" }}</td>
+                <td>{% if d.justificatif %}<a href="{{ d.justificatif.url }}" class="text-primary text-sm hover:underline" target="_blank">Voir</a>{% else %}—{% endif %}</td>
+                <td>
+                    <a href="{% url 'depenses:modifier' d.id %}" class="text-primary text-sm font-semibold hover:underline">Modifier</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-gray-400 text-center py-8">Aucune dépense.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

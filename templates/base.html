@@ -1,0 +1,133 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Vacances ADEIB{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0048AE',
+                        'primary-light': '#E8F0FA',
+                        'primary-dark': '#003580',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --color-primary: #0048AE;
+            --color-primary-light: #E8F0FA;
+            --color-primary-dark: #003580;
+            --color-success: #16A34A;
+            --color-warning: #F59E0B;
+            --color-danger: #DC2626;
+        }
+        * { box-shadow: none !important; }
+        .btn-primary {
+            background-color: #0048AE;
+            color: white;
+            border: 2px solid #0048AE;
+            border-radius: 6px;
+            padding: 0.625rem 1.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover { background-color: #003580; border-color: #003580; }
+        .btn-secondary {
+            background-color: transparent;
+            color: #0048AE;
+            border: 2px solid #0048AE;
+            border-radius: 6px;
+            padding: 0.625rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background-color: #E8F0FA; }
+        .btn-success {
+            background-color: #16A34A;
+            color: white;
+            border: 2px solid #16A34A;
+            border-radius: 6px;
+            padding: 0.625rem 1.5rem;
+            font-weight: 600;
+        }
+        .btn-success:hover { background-color: #15803D; border-color: #15803D; }
+        .btn-danger {
+            background-color: #DC2626;
+            color: white;
+            border: 2px solid #DC2626;
+            border-radius: 6px;
+            padding: 0.625rem 1.5rem;
+            font-weight: 600;
+        }
+        .btn-danger:hover { background-color: #B91C1C; border-color: #B91C1C; }
+        .card {
+            background-color: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .input-field {
+            width: 100%;
+            border: 2px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 0.625rem 0.75rem;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #0048AE;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0.125rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-primary { background-color: #E8F0FA; color: #0048AE; }
+        .badge-success { background-color: #DCFCE7; color: #16A34A; }
+        .badge-warning { background-color: #FEF3C7; color: #D97706; }
+        .badge-danger { background-color: #FEE2E2; color: #DC2626; }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            color: #4B5563;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .sidebar-link:hover { background-color: #E8F0FA; color: #0048AE; }
+        .sidebar-link.active { background-color: #0048AE; color: white; }
+        .bottom-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem 0.25rem;
+            color: #6B7280;
+            font-size: 0.625rem;
+            font-weight: 500;
+        }
+        .bottom-nav-link.active { color: #0048AE; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex flex-col font-sans antialiased">
+    {% include 'includes/header.html' %}
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+    {% include 'includes/footer.html' %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

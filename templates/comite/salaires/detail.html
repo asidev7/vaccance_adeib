@@ -1,0 +1,41 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Détail Salaire — Comité ADEIB{% endblock %}
+{% block content %}
+<a href="{% url 'salaires:liste' %}" class="text-primary text-sm font-semibold hover:underline mb-4 inline-block">← Retour</a>
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">Salaire — {{ salaire.enseignant }}</h1>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card">
+        <h2 class="font-bold text-gray-900 mb-3">Détails du salaire</h2>
+        <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">Enseignant</dt><dd class="font-medium">{{ salaire.enseignant }}</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Session</dt><dd class="font-medium">{{ salaire.session.nom }}</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Heures effectuées</dt><dd class="font-bold">{{ salaire.nombre_heures_effectuees }} h</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Taux horaire</dt><dd class="font-medium">{{ salaire.taux_horaire }} FCFA/h</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Montant brut</dt><dd class="font-bold text-lg text-primary">{{ salaire.montant_brut }} FCFA</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Déjà versé</dt><dd class="font-bold text-green-600">{{ salaire.montant_deja_verse }} FCFA</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Reste à verser</dt><dd class="font-bold text-lg {% if salaire.solde_restant > 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ salaire.solde_restant }} FCFA</dd></div>
+        </dl>
+        {% if salaire.solde_restant > 0 %}
+        <a href="{% url 'salaires:versement_ajout' salaire.id %}" class="btn-success mt-4 inline-block text-sm">💳 Enregistrer un versement</a>
+        {% endif %}
+    </div>
+    <div class="card">
+        <h2 class="font-bold text-gray-900 mb-3">Historique des versements</h2>
+        <table>
+            <thead><tr><th>Date</th><th>Montant</th><th>Mode</th><th>Versé par</th></tr></thead>
+            <tbody>
+                {% for v in salaire.versements.all %}
+                <tr>
+                    <td>{{ v.date_versement|date:"d/m/Y" }}</td>
+                    <td class="font-medium">{{ v.montant }} FCFA</td>
+                    <td>{{ v.get_mode_paiement_display }}</td>
+                    <td>{{ v.verse_par.get_full_name|default:'—' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-gray-400 text-center py-4">Aucun versement.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

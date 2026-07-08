@@ -1,0 +1,49 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Détail Inscription — Comité ADEIB{% endblock %}
+{% block content %}
+<a href="{% url 'inscriptions_comite:liste_comite' %}" class="text-primary text-sm font-semibold hover:underline mb-4 inline-block">← Retour à la liste</a>
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">{{ inscription.nom_eleve }} {{ inscription.prenom_eleve }}</h1>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card">
+        <h2 class="font-bold text-gray-900 mb-3">Informations élève</h2>
+        <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">Nom complet</dt><dd class="font-medium">{{ inscription.nom_eleve }} {{ inscription.prenom_eleve }}</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Date de naissance</dt><dd class="font-medium">{{ inscription.date_naissance|date:"d/m/Y" }}</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Niveau</dt><dd class="font-medium">{{ inscription.niveau.nom }} ({{ inscription.niveau.get_cycle_display }})</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Matières</dt><dd class="font-medium">{% for m in inscription.matieres_choisies.all %}{{ m.nom }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>
+        </dl>
+    </div>
+    <div class="card">
+        <h2 class="font-bold text-gray-900 mb-3">Paiement</h2>
+        <dl class="space-y-2 text-sm">
+            <div class="flex justify-between"><dt class="text-gray-500">Montant dû</dt><dd class="font-bold text-lg">{{ inscription.montant_du }} FCFA</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Montant payé</dt><dd class="font-bold text-lg text-green-600">{{ inscription.montant_paye }} FCFA</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Reste à payer</dt><dd class="font-bold text-lg {% if reste > 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ reste }} FCFA</dd></div>
+            <div class="flex justify-between"><dt class="text-gray-500">Statut</dt><dd><span class="badge {% if inscription.statut_paiement == 'PAYE' %}badge-success{% elif inscription.statut_paiement == 'PARTIEL' %}badge-warning{% else %}badge-danger{% endif %}">{{ inscription.get_statut_paiement_display }}</span></dd></div>
+        </dl>
+        {% if reste > 0 %}
+        <a href="{% url 'inscriptions_comite:paiement_ajout_comite' inscription.id %}" class="btn-success mt-4 inline-block">Enregistrer un paiement</a>
+        {% endif %}
+    </div>
+</div>
+<!-- Paiements history -->
+<div class="card mt-6">
+    <h2 class="font-bold text-gray-900 mb-3">Historique des paiements</h2>
+    <table>
+        <thead><tr><th>Date</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Enregistré par</th></tr></thead>
+        <tbody>
+            {% for p in inscription.paiements.all %}
+            <tr>
+                <td>{{ p.date_paiement|date:"d/m/Y H:i" }}</td>
+                <td class="font-medium">{{ p.montant }} FCFA</td>
+                <td>{{ p.get_methode_display }}</td>
+                <td><span class="badge {% if p.statut == 'CONFIRME' %}badge-success{% elif p.statut == 'ECHOUE' %}badge-danger{% else %}badge-warning{% endif %}">{{ p.get_statut_display }}</span></td>
+                <td>{{ p.enregistre_par.get_full_name|default:'—' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-gray-400 text-center py-4">Aucun paiement enregistré.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

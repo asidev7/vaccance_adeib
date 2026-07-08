@@ -1,0 +1,63 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Inscriptions — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-gray-900">Inscriptions</h1>
+    <div class="flex items-center gap-3">
+        <a href="{% url 'inscriptions_comite:ajouter_comite' %}" class="btn-primary text-sm">+ Inscrire un élève</a>
+        <span class="text-sm text-gray-500">{{ inscriptions.count }} élève(s)</span>
+    </div>
+</div>
+<!-- Filters -->
+<div class="card mb-4">
+    <form method="get" class="flex flex-wrap gap-3 items-end">
+        <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Recherche</label>
+            <input type="text" name="q" value="{{ query }}" class="input-field" placeholder="Nom élève, parent...">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Niveau</label>
+            <select name="niveau" class="input-field">
+                <option value="">Tous</option>
+                {% for n in niveaux %}
+                <option value="{{ n.id }}" {% if filtre_niveau == n.id|stringformat:'s' %}selected{% endif %}>{{ n.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Paiement</label>
+            <select name="statut" class="input-field">
+                <option value="">Tous</option>
+                <option value="PAYE" {% if filtre_statut == 'PAYE' %}selected{% endif %}>Payé</option>
+                <option value="PARTIEL" {% if filtre_statut == 'PARTIEL' %}selected{% endif %}>Partiel</option>
+                <option value="IMPAYE" {% if filtre_statut == 'IMPAYE' %}selected{% endif %}>Impayé</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-primary">Filtrer</button>
+    </form>
+</div>
+<!-- Table -->
+<div class="card overflow-x-auto">
+    <table>
+        <thead><tr><th>Élève</th><th>Niveau</th><th>Parent</th><th>Téléphone</th><th>Montant dû</th><th>Payé</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for i in inscriptions %}
+            <tr>
+                <td class="font-medium">{{ i.nom_eleve }} {{ i.prenom_eleve }}</td>
+                <td>{{ i.niveau.nom }}</td>
+                <td>{{ i.nom_parent }}</td>
+                <td>{{ i.telephone_parent }}</td>
+                <td>{{ i.montant_du }} F</td>
+                <td>{{ i.montant_paye }} F</td>
+                <td><span class="badge {% if i.statut_paiement == 'PAYE' %}badge-success{% elif i.statut_paiement == 'PARTIEL' %}badge-warning{% else %}badge-danger{% endif %}">{{ i.get_statut_paiement_display }}</span></td>
+                <td>
+                    <a href="{% url 'inscriptions_comite:detail_comite' i.id %}" class="text-primary text-sm font-semibold hover:underline">Détail</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" class="text-gray-400 text-center py-8">Aucune inscription trouvée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

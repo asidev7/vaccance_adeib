@@ -1,0 +1,34 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Enseignants — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-gray-900">Enseignants</h1>
+    <div class="flex items-center gap-3">
+        {% if user.is_admin %}
+        <a href="{% url 'enseignants_comite:ajouter_enseignant' %}" class="btn-primary">+ Ajouter un enseignant</a>
+        {% endif %}
+        <span class="text-sm text-gray-500">{{ enseignants.count }} enseignant(s)</span>
+    </div>
+</div>
+<div class="card overflow-x-auto">
+    <table>
+        <thead><tr><th>Enseignant</th><th>Téléphone</th><th>Matières</th><th>Taux horaire</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for e in enseignants %}
+            <tr>
+                <td class="font-medium">{{ e.user.get_full_name|default:e.user.username }}</td>
+                <td>{{ e.user.telephone }}</td>
+                <td>{% for m in e.matieres.all %}<span class="badge badge-primary mr-1">{{ m.nom }}</span>{% endfor %}</td>
+                <td>{{ e.taux_horaire }} FCFA/h</td>
+                <td><span class="badge {% if e.est_actif %}badge-success{% else %}badge-danger{% endif %}">{% if e.est_actif %}Actif{% else %}Inactif{% endif %}</span></td>
+                <td>
+                    <a href="{% url 'enseignants_comite:detail_comite' e.id %}" class="text-primary text-sm font-semibold hover:underline">Détail</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-gray-400 text-center py-8">Aucun enseignant enregistré.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'enseignant/base_enseignant.html' %}
+{% block title %}Mon QR Code — Enseignant ADEIB{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-extrabold text-gray-900 mb-2">Mon QR Code</h1>
+<p class="text-gray-500 mb-8">Présentez ce QR code au comité chaque jour pour enregistrer votre présence.</p>
+<div class="card max-w-sm mx-auto text-center">
+    {% if enseignant.qr_code_image %}
+    <img src="{{ enseignant.qr_code_image.url }}" alt="QR Code" class="mx-auto max-w-[250px] border-2 border-gray-200 rounded-md">
+    <p class="mt-4 text-sm text-gray-500">UID : <code class="bg-gray-100 px-2 py-1 rounded text-xs">{{ enseignant.qr_code_uid }}</code></p>
+    <div class="mt-4 flex gap-3 justify-center">
+        <a href="{{ enseignant.qr_code_image.url }}" download class="btn-secondary text-sm">📥 Télécharger</a>
+        <button onclick="window.print()" class="btn-primary text-sm">🖨 Imprimer</button>
+    </div>
+    {% else %}
+    <div class="py-8 text-gray-400">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto mb-3"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+        <p>QR code en cours de génération...</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Accueil — ADEIB Cours de Vacances{% endblock %}
+{% block content %}
+<!-- Hero -->
+<section class="bg-primary text-white py-16 md:py-20">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">Cours de Vacances ADEIB</h1>
+        <p class="mt-4 text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
+            Donnez à votre enfant une longueur d'avance. Des cours de qualité encadrés par des enseignants passionnés.
+        </p>
+        {% if session_active %}
+        <div class="mt-6 inline-block bg-white text-primary font-bold px-6 py-3 rounded-md">
+            📅 {{ session_active.nom }} — du {{ session_active.date_debut|date:"d/m/Y" }} au {{ session_active.date_fin|date:"d/m/Y" }}
+        </div>
+        {% endif %}
+        {% if not session_active %}
+        <p class="mt-8 text-blue-100 text-lg">Aucune session de cours n'est active pour le moment. Revenez bientôt !</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="py-12 bg-white">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card text-center">
+                <div class="text-3xl font-extrabold text-primary">{{ nb_enseignants|default:0 }}</div>
+                <div class="text-gray-500 mt-1">Enseignants actifs</div>
+            </div>
+            <div class="card text-center">
+                <div class="text-3xl font-extrabold text-primary">{{ nb_inscriptions|default:0 }}</div>
+                <div class="text-gray-500 mt-1">Élèves inscrits</div>
+            </div>
+            <div class="card text-center">
+                <div class="text-3xl font-extrabold text-primary">{{ nb_matieres|default:0 }}</div>
+                <div class="text-gray-500 mt-1">Matières enseignées</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Info -->
+<section class="py-12 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4">
+        <h2 class="text-2xl font-bold text-gray-900 text-center mb-8">Comment ça marche ?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">1</div>
+                <h3 class="font-bold text-gray-900">Inscrivez votre enfant</h3>
+                <p class="text-gray-500 mt-2 text-sm">Remplissez le formulaire en ligne et choisissez les matières.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">2</div>
+                <h3 class="font-bold text-gray-900">Effectuez le paiement</h3>
+                <p class="text-gray-500 mt-2 text-sm">Réglez les frais d'inscription par Mobile Money ou en espèces.</p>
+            </div>
+            <div class="text-center">
+                <div class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">3</div>
+                <h3 class="font-bold text-gray-900">Les cours commencent</h3>
+                <p class="text-gray-500 mt-2 text-sm">Votre enfant suit les cours du lundi au vendredi, 8h–13h.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Salaires — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-gray-900">Salaires</h1>
+    <a href="{% url 'salaires:calculer' %}" class="btn-primary text-sm">🧮 Calculer les salaires</a>
+</div>
+<div class="card overflow-x-auto">
+    <table>
+        <thead><tr><th>Enseignant</th><th>Session</th><th>Heures</th><th>Taux</th><th>Brut</th><th>Versé</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for s in salaires %}
+            <tr>
+                <td class="font-medium">{{ s.enseignant }}</td>
+                <td>{{ s.session.nom }}</td>
+                <td>{{ s.nombre_heures_effectuees }}h</td>
+                <td>{{ s.taux_horaire }} F</td>
+                <td class="font-bold">{{ s.montant_brut }} FCFA</td>
+                <td>{{ s.montant_deja_verse }} FCFA</td>
+                <td><span class="badge {% if s.statut == 'PAYE' %}badge-success{% elif s.statut == 'PARTIELLEMENT_PAYE' %}badge-warning{% else %}badge-primary{% endif %}">{{ s.get_statut_display }}</span></td>
+                <td>
+                    <a href="{% url 'salaires:detail' s.id %}" class="text-primary text-sm font-semibold hover:underline">Détail</a>
+                    <a href="{% url 'salaires:bulletin_pdf' s.id %}" class="text-primary text-sm font-semibold hover:underline ml-2" target="_blank">PDF</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" class="text-gray-400 text-center py-8">Aucun salaire calculé. <a href="{% url 'salaires:calculer' %}" class="text-primary font-semibold hover:underline">Lancer le calcul</a></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

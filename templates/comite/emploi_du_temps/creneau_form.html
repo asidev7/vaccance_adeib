@@ -1,0 +1,62 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Créneau — Comité ADEIB{% endblock %}
+{% block content %}
+<a href="{% url 'emploi_du_temps_comite:grille_comite' %}" class="text-primary text-sm font-semibold hover:underline mb-4 inline-block">← Retour</a>
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">{% if creneau %}Modifier{% else %}Ajouter{% endif %} un créneau</h1>
+<form method="post" class="card max-w-lg space-y-4">
+    {% csrf_token %}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Jour *</label>
+        <select name="jour" class="input-field" required>
+            <option value="">-- Sélectionnez --</option>
+            <option value="LUNDI" {% if creneau.jour == 'LUNDI' %}selected{% endif %}>Lundi</option>
+            <option value="MARDI" {% if creneau.jour == 'MARDI' %}selected{% endif %}>Mardi</option>
+            <option value="MERCREDI" {% if creneau.jour == 'MERCREDI' %}selected{% endif %}>Mercredi</option>
+            <option value="JEUDI" {% if creneau.jour == 'JEUDI' %}selected{% endif %}>Jeudi</option>
+            <option value="VENDREDI" {% if creneau.jour == 'VENDREDI' %}selected{% endif %}>Vendredi</option>
+        </select>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Heure début *</label>
+            <input type="time" name="heure_debut" class="input-field" min="08:00" max="13:00" value="{{ creneau.heure_debut|time:'H:i' }}" required>
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Heure fin *</label>
+            <input type="time" name="heure_fin" class="input-field" min="08:00" max="13:00" value="{{ creneau.heure_fin|time:'H:i' }}" required>
+        </div>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Matière *</label>
+        <select name="matiere" class="input-field" required>
+            <option value="">-- Sélectionnez --</option>
+            {% for m in matieres %}
+            <option value="{{ m.id }}" {% if creneau.matiere_id == m.id %}selected{% endif %}>{{ m.nom }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Niveau *</label>
+        <select name="niveau" class="input-field" required>
+            <option value="">-- Sélectionnez --</option>
+            {% for n in niveaux %}
+            <option value="{{ n.id }}" {% if creneau.niveau_id == n.id %}selected{% endif %}>{{ n.nom }} ({{ n.get_cycle_display }})</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Enseignant *</label>
+        <select name="enseignant" class="input-field" required>
+            <option value="">-- Sélectionnez --</option>
+            {% for e in enseignants %}
+            <option value="{{ e.id }}" {% if creneau.enseignant_id == e.id %}selected{% endif %}>{{ e.user.get_full_name|default:e.user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Salle (optionnel)</label>
+        <input type="text" name="salle" class="input-field" value="{{ creneau.salle|default:'' }}" placeholder="Ex: Salle A">
+    </div>
+    <button type="submit" class="btn-primary w-full">{% if creneau %}Enregistrer les modifications{% else %}Ajouter le créneau{% endif %}</button>
+</form>
+{% endblock %}

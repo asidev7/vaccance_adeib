@@ -1,0 +1,54 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Ajouter un enseignant — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-extrabold text-gray-900 mb-6">Ajouter un enseignant</h1>
+
+    <form method="post" class="card space-y-4">
+        {% csrf_token %}
+        <div>
+            <label for="username" class="block text-sm font-semibold text-gray-700 mb-1">Nom d'utilisateur *</label>
+            <input type="text" name="username" id="username" class="input-field" value="{{ form_data.username|default:'' }}" required>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="last_name" class="block text-sm font-semibold text-gray-700 mb-1">Nom *</label>
+                <input type="text" name="last_name" id="last_name" class="input-field" value="{{ form_data.last_name|default:'' }}" required>
+            </div>
+            <div>
+                <label for="first_name" class="block text-sm font-semibold text-gray-700 mb-1">Prénom *</label>
+                <input type="text" name="first_name" id="first_name" class="input-field" value="{{ form_data.first_name|default:'' }}" required>
+            </div>
+        </div>
+        <div>
+            <label for="telephone" class="block text-sm font-semibold text-gray-700 mb-1">Téléphone</label>
+            <input type="text" name="telephone" id="telephone" class="input-field" value="{{ form_data.telephone|default:'' }}">
+        </div>
+        <div>
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+            <input type="email" name="email" id="email" class="input-field" value="{{ form_data.email|default:'' }}">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Matières</label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {% for matiere in matieres %}
+                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                    <input type="checkbox" name="matieres" value="{{ matiere.id }}" class="rounded border-gray-300 text-primary focus:ring-primary" {% if matiere.id|stringformat:"s" in form_data.matieres %}checked{% endif %}>
+                    {{ matiere.nom }}
+                </label>
+                {% empty %}
+                <p class="text-sm text-gray-400 col-span-full">Aucune matière disponible.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <label for="taux_horaire" class="block text-sm font-semibold text-gray-700 mb-1">Taux horaire (FCFA/h)</label>
+            <input type="number" name="taux_horaire" id="taux_horaire" class="input-field" value="{{ form_data.taux_horaire|default:'1000' }}" min="0" step="100">
+        </div>
+        <div class="flex items-center gap-3 pt-2">
+            <button type="submit" class="btn-primary">Ajouter l'enseignant</button>
+            <a href="{% url 'enseignants_comite:liste_comite' %}" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}{% if niveau %}Modifier{% else %}Ajouter{% endif %} un niveau — Comité ADEIB{% endblock %}
+{% block content %}
+<a href="{% url 'niveaux:liste' %}" class="text-primary text-sm font-semibold hover:underline mb-4 inline-block">← Retour</a>
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">{% if niveau %}Modifier{% else %}Ajouter{% endif %} un niveau</h1>
+<form method="post" class="card max-w-lg space-y-4">
+    {% csrf_token %}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Nom *</label>
+        <input type="text" name="nom" class="input-field" value="{{ niveau.nom|default:'' }}" required placeholder="Ex: CM1, 6e, Terminale">
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Cycle *</label>
+        <select name="cycle" class="input-field" required>
+            <option value="">-- Sélectionnez --</option>
+            <option value="PRIMAIRE" {% if niveau.cycle == 'PRIMAIRE' %}selected{% endif %}>Primaire</option>
+            <option value="COLLEGE" {% if niveau.cycle == 'COLLEGE' %}selected{% endif %}>Collège</option>
+            <option value="LYCEE" {% if niveau.cycle == 'LYCEE' %}selected{% endif %}>Lycée</option>
+        </select>
+    </div>
+    <button type="submit" class="btn-primary w-full">Enregistrer</button>
+</form>
+{% endblock %}

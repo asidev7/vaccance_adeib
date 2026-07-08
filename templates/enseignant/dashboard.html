@@ -1,0 +1,40 @@
+{% extends 'enseignant/base_enseignant.html' %}
+{% block title %}Dashboard — Enseignant ADEIB{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">Bonjour, {{ user.first_name|default:user.username }} 👋</h1>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+    <div class="stat-card">
+        <div class="text-sm text-gray-500">Taux de présence</div>
+        <div class="text-2xl font-extrabold text-primary mt-1">{{ taux_presence|default:'—' }}%</div>
+    </div>
+    <div class="stat-card">
+        <div class="text-sm text-gray-500">Heures effectuées</div>
+        <div class="text-2xl font-extrabold text-primary mt-1">{{ heures_effectuees|default:0 }}h</div>
+    </div>
+    <div class="stat-card">
+        <div class="text-sm text-gray-500">Solde salaire</div>
+        <div class="text-2xl font-extrabold text-green-600 mt-1">{{ solde_salaire|default:0 }} FCFA</div>
+    </div>
+</div>
+<div class="card">
+    <h2 class="font-bold text-gray-900 mb-3">Mon emploi du temps — Cette semaine</h2>
+    <div class="overflow-x-auto">
+        <table>
+            <thead><tr><th>Jour</th><th>Horaire</th><th>Matière</th><th>Niveau</th><th>Salle</th></tr></thead>
+            <tbody>
+                {% for c in emploi_du_temps %}
+                <tr>
+                    <td class="font-medium">{{ c.get_jour_display }}</td>
+                    <td>{{ c.heure_debut|time:"H:i" }}–{{ c.heure_fin|time:"H:i" }}</td>
+                    <td><span class="badge" style="background-color:{{ c.matiere.couleur_badge }}20;color:{{ c.matiere.couleur_badge }}">{{ c.matiere.nom }}</span></td>
+                    <td>{{ c.niveau.nom }}</td>
+                    <td>{{ c.salle|default:'—' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-gray-400 text-center py-4">Aucun créneau programmé cette semaine.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

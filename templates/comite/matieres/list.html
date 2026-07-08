@@ -1,0 +1,28 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Matières — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-gray-900">Matières</h1>
+    <a href="{% url 'matieres:ajouter' %}" class="btn-primary text-sm">+ Ajouter</a>
+</div>
+<div class="card overflow-x-auto">
+    <table>
+        <thead><tr><th>Nom</th><th>Niveau concerné</th><th>Couleur</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for m in matieres %}
+            <tr>
+                <td class="font-medium">{{ m.nom }}</td>
+                <td>{{ m.get_niveau_concerne_display }}</td>
+                <td><span class="inline-block w-6 h-6 rounded-full" style="background-color: {{ m.couleur_badge }}"></span> {{ m.couleur_badge }}</td>
+                <td>
+                    <a href="{% url 'matieres:modifier' m.id %}" class="text-primary text-sm font-semibold hover:underline">Modifier</a>
+                    <a href="{% url 'matieres:supprimer' m.id %}" class="text-red-600 text-sm font-semibold hover:underline ml-2" onclick="return confirm('Supprimer cette matière ?')">Supprimer</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-gray-400 text-center py-8">Aucune matière.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

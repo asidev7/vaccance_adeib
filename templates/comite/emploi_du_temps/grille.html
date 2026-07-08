@@ -1,0 +1,47 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}Emploi du Temps — Comité ADEIB{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-extrabold text-gray-900">Emploi du Temps</h1>
+    <a href="{% url 'emploi_du_temps_comite:creneau_ajout_comite' %}" class="btn-primary text-sm">+ Ajouter un créneau</a>
+</div>
+{% if session_active %}
+<p class="text-sm text-gray-500 mb-4">📅 {{ session_active.nom }}</p>
+{% endif %}
+<div class="card overflow-x-auto">
+    <table>
+        <thead>
+            <tr>
+                <th>Horaire</th>
+                {% for jour_code, jour_nom in jours %}
+                <th>{{ jour_nom }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for creneau_horaire in grille %}
+            <tr>
+                <td class="font-medium text-xs whitespace-nowrap">{{ creneau_horaire.debut|time:"H:i" }}–{{ creneau_horaire.fin|time:"H:i" }}</td>
+                {% for creneau in creneau_horaire.creneaux %}
+                <td class="p-1 min-w-[130px]">
+                    {% if creneau %}
+                    <div class="p-2 rounded-md text-xs" style="background-color:{{ creneau.matiere.couleur_badge|default:'#E8F0FA' }}20; border-left: 3px solid {{ creneau.matiere.couleur_badge|default:'#0048AE' }}">
+                        <div class="font-bold">{{ creneau.matiere.nom }}</div>
+                        <div class="text-gray-600">{{ creneau.niveau.nom }}</div>
+                        <div class="text-gray-500 text-[10px]">{{ creneau.enseignant }}</div>
+                        {% if creneau.salle %}<div class="text-gray-400 text-[10px]">Salle {{ creneau.salle }}</div>{% endif %}
+                        <a href="{% url 'emploi_du_temps_comite:creneau_modifier_comite' creneau.id %}" class="text-primary text-[10px] hover:underline">Modifier</a>
+                    </div>
+                    {% else %}
+                    <div class="text-gray-300 text-xs text-center py-2">—</div>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-gray-400 text-center py-8">Aucun créneau programmé. <a href="{% url 'emploi_du_temps_comite:creneau_ajout_comite' %}" class="text-primary font-semibold hover:underline">Ajouter le premier</a></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

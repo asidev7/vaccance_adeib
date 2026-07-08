@@ -1,0 +1,37 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}{% if depense %}Modifier{% else %}Ajouter{% endif %} une dépense — Comité ADEIB{% endblock %}
+{% block content %}
+<a href="{% url 'depenses:liste' %}" class="text-primary text-sm font-semibold hover:underline mb-4 inline-block">← Retour</a>
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">{% if depense %}Modifier{% else %}Ajouter{% endif %} une dépense</h1>
+<form method="post" enctype="multipart/form-data" class="card max-w-lg space-y-4">
+    {% csrf_token %}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Libellé *</label>
+        <input type="text" name="libelle" class="input-field" value="{{ depense.libelle|default:'' }}" required>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Catégorie *</label>
+        <select name="categorie" class="input-field" required>
+            <option value="">-- Sélectionnez --</option>
+            <option value="FOURNITURES" {% if depense.categorie == 'FOURNITURES' %}selected{% endif %}>Fournitures</option>
+            <option value="LOGIQUE" {% if depense.categorie == 'LOGIQUE' %}selected{% endif %}>Logistique</option>
+            <option value="COMMUNICATION" {% if depense.categorie == 'COMMUNICATION' %}selected{% endif %}>Communication</option>
+            <option value="RESTAURATION" {% if depense.categorie == 'RESTAURATION' %}selected{% endif %}>Restauration</option>
+            <option value="AUTRE" {% if depense.categorie == 'AUTRE' %}selected{% endif %}>Autre</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Montant (FCFA) *</label>
+        <input type="number" name="montant" class="input-field" value="{{ depense.montant|default:'' }}" required>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Date *</label>
+        <input type="date" name="date_depense" class="input-field" value="{{ depense.date_depense|date:'Y-m-d'|default:'' }}" required>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Justificatif (optionnel)</label>
+        <input type="file" name="justificatif" class="input-field" accept="image/*,.pdf">
+    </div>
+    <button type="submit" class="btn-primary w-full">Enregistrer</button>
+</form>
+{% endblock %}

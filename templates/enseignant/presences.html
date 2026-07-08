@@ -1,0 +1,23 @@
+{% extends 'enseignant/base_enseignant.html' %}
+{% block title %}Mes Présences — Enseignant ADEIB{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">Historique de mes présences</h1>
+<div class="card overflow-x-auto">
+    <table>
+        <thead><tr><th>Date</th><th>Créneau</th><th>Heure scan</th><th>Statut</th><th>Validé par</th></tr></thead>
+        <tbody>
+            {% for p in presences %}
+            <tr>
+                <td class="font-medium">{{ p.date|date:"d/m/Y" }}</td>
+                <td>{{ p.creneau.matiere.nom }} — {{ p.creneau.heure_debut|time:"H:i" }}–{{ p.creneau.heure_fin|time:"H:i" }}</td>
+                <td>{{ p.heure_scan|date:"H:i" }}</td>
+                <td><span class="badge {% if p.statut == 'PRESENT' %}badge-success{% elif p.statut == 'RETARD' %}badge-warning{% else %}badge-danger{% endif %}">{{ p.get_statut_display }}</span></td>
+                <td>{{ p.valide_par.get_full_name|default:'—' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-gray-400 text-center py-8">Aucune présence enregistrée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

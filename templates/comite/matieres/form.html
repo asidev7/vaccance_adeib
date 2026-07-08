@@ -1,0 +1,27 @@
+{% extends 'comite/base_comite.html' %}
+{% block title %}{% if matiere %}Modifier{% else %}Ajouter{% endif %} une matière — Comité ADEIB{% endblock %}
+{% block content %}
+<a href="{% url 'matieres:liste' %}" class="text-primary text-sm font-semibold hover:underline mb-4 inline-block">← Retour</a>
+<h1 class="text-2xl font-extrabold text-gray-900 mb-6">{% if matiere %}Modifier{% else %}Ajouter{% endif %} une matière</h1>
+<form method="post" class="card max-w-lg space-y-4">
+    {% csrf_token %}
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Nom *</label>
+        <input type="text" name="nom" class="input-field" value="{{ matiere.nom|default:'' }}" required>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Niveau concerné *</label>
+        <select name="niveau_concerne" class="input-field" required>
+            <option value="">-- Sélectionnez --</option>
+            <option value="PRIMAIRE" {% if matiere.niveau_concerne == 'PRIMAIRE' %}selected{% endif %}>Primaire</option>
+            <option value="COLLEGE" {% if matiere.niveau_concerne == 'COLLEGE' %}selected{% endif %}>Collège</option>
+            <option value="LYCEE" {% if matiere.niveau_concerne == 'LYCEE' %}selected{% endif %}>Lycée</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Couleur du badge</label>
+        <input type="color" name="couleur_badge" class="input-field h-10 w-20" value="{{ matiere.couleur_badge|default:'#0048AE' }}">
+    </div>
+    <button type="submit" class="btn-primary w-full">Enregistrer</button>
+</form>
+{% endblock %}
