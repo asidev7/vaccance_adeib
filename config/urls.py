@@ -25,6 +25,9 @@ urlpatterns = [
     # Enseignant
     path('enseignant/', include('apps.accounts.urls_enseignant')),
     path('enseignant/', include('apps.enseignants.urls_enseignant')),
+    path('enseignant/', include('apps.notes.urls_enseignant')),
+    # Notes & Bulletins (Comité)
+    path('comite/', include('apps.notes.urls_comite')),
 ]
 
 if settings.DEBUG:

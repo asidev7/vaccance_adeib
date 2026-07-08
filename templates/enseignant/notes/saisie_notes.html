@@ -1,0 +1,222 @@
+{% extends 'enseignant/base_enseignant.html' %}
+{% load static %}
+{% load notes_extras %}
+
+{% block title %}Saisie des notes — {{ niveau.nom }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'notes_enseignant:liste_classes' %}">Mes classes</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ niveau.nom }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-edit text-primary"></i> Saisie des notes
+            </h2>
+            <p class="text-muted mb-0">
+                Classe : <strong>{{ niveau.nom }}</strong> ({{ niveau.get_cycle_display }}) —
+                Session : <strong>{{ session.nom }}</strong>
+            </p>
+        </div>
+        <div class="text-end">
+            <small class="text-muted d-block">Effectif</small>
+            <strong>{{ eleves_data|length }} élève(s)</strong>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Sélection de matière -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end" id="matiere-form">
+                <div class="col-md-6">
+                    <label for="matiere-select" class="form-label fw-bold">
+                        <i class="fas fa-book me-1"></i> Sélectionnez une matière
+                    </label>
+                    <select name="matiere" id="matiere-select" class="form-select"
+                            onchange="document.getElementById('matiere-form').submit()">
+                        <option value="">— Choisir une matière —</option>
+                        {% for m in matieres %}
+                            <option value="{{ m.id }}"
+                                    {% if matiere_active and matiere_active.id == m.id %}selected{% endif %}>
+                                {{ m.nom }}
+                                {% if m.id in coefficients %}
+                                    (Coef: {{ coefficients|dict_key:m.id }})
+                                {% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if matiere_active %}
+                    <div class="col-md-3">
+                        <span class="badge bg-primary fs-6 p-2">
+                            Coefficient: {{ coefficients|dict_key:matiere_active.id|default:"1.0" }}
+                        </span>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    {% if matiere_active %}
+        <!-- Formulaire de saisie -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-pencil-alt text-primary me-1"></i>
+                    Notes pour <strong>{{ matiere_active.nom }}</strong>
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="matiere_id" value="{{ matiere_active.id }}">
+
+                    <div class="table-responsive">
+                        <div class="table-scroll-mobile"><table class="table table-hover align-middle">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th class="text-center" style="width: 50px;">N°</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th class="text-center" style="width: 150px;">Note /20</th>
+                                    <th>Observation</th>
+                                    <th class="text-center" style="width: 60px;">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in eleves_data %}
+                                    <tr>
+                                        <td class="text-center">{{ forloop.counter }}</td>
+                                        <td><strong>{{ item.eleve.nom_eleve }}</strong></td>
+                                        <td>{{ item.eleve.prenom_eleve }}</td>
+                                        <td>
+                                            <input type="number"
+                                                   name="note_{{ item.eleve.id }}"
+                                                   id="note_{{ item.eleve.id }}"
+                                                   class="form-control form-control-sm text-center"
+                                                   step="0.5"
+                                                   min="0"
+                                                   max="20"
+                                                   placeholder="0-20 (laisser vide si non noté)"
+                                                   value="{{ item.note.note|default:'' }}">
+                                        </td>
+                                        <td>
+                                            <input type="text"
+                                                   name="obs_{{ item.eleve.id }}"
+                                                   class="form-control form-control-sm"
+                                                   placeholder="Appréciation..."
+                                                   value="{{ item.note.observation|default:'' }}">
+                                        </td>
+                                        <td class="text-center">
+                                            {% if item.note %}
+                                                <span class="badge bg-success" title="Note enregistrée">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark" title="En attente">
+                                                    <i class="fas fa-clock"></i>
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">
+                                            Aucun élève inscrit dans cette classe.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i>
+                                Les notes doivent être comprises entre 0 et 20.
+                            </small>
+                        </div>
+                        <div>
+                            <a href="{% url 'notes_enseignant:liste_classes' %}"
+                               class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Enregistrer les notes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Aperçu -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar text-primary me-1"></i>
+                    Aperçu des notes — {{ matiere_active.nom }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted d-block">Élèves notés</small>
+                            <strong class="fs-4">{{ count_notes_matiere_active }}/{{ eleves_data|length }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted d-block">Coefficient</small>
+                            <strong class="fs-4">{{ coefficients|dict_key:matiere_active.id|default:"1.0" }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        {% with total=eleves_data|length %}
+                        <div class="p-3 bg-light rounded">
+                            <small class="text-muted d-block">Progression</small>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: {% if total > 0 %}{% widthratio count_notes_matiere_active total 100 %}{% else %}0{% endif %}%">
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% elif matieres %}
+        <div class="text-center py-5 text-muted">
+            <div class="display-4 mb-3"><i class="fas fa-hand-pointer"></i></div>
+            <h4>Sélectionnez une matière</h4>
+            <p>Choisissez une matière ci-dessus pour commencer la saisie des notes.</p>
+        </div>
+    {% else %}
+        <div class="text-center py-5 text-muted">
+            <div class="display-4 mb-3"><i class="fas fa-exclamation-triangle"></i></div>
+            <h4>Aucune matière assignée</h4>
+            <p>Vous n'avez pas de matière dans cette classe pour cette session.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

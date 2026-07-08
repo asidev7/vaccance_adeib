@@ -39,6 +39,60 @@
         .badge-warning { background-color: #FEF3C7; color: #D97706; }
         .badge-danger { background-color: #FEE2E2; color: #DC2626; }
         .stat-card { border-left: 4px solid #0048AE; padding: 1rem 1.25rem; background: white; border-radius: 0 6px 6px 0; border-top: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 0.75rem; border-bottom: 2px solid #0048AE; color: #374151; font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 0.75rem; border-bottom: 1px solid #E5E7EB; font-size: 0.875rem; }
+        tr:hover td { background-color: #F0F4FF; }
+        tbody tr:nth-child(even) td { background-color: #F8FAFC; }
+        tbody tr:nth-child(even):hover td { background-color: #E8F0FE; }
+
+        /* === RESPONSIVE MOBILE === */
+        @media (max-width: 767px) {
+            .card { padding: 1rem !important; }
+            .stat-card { padding: 0.75rem 1rem !important; }
+            .stat-card .text-2xl { font-size: 1.25rem !important; }
+            h1 { font-size: 1.25rem !important; }
+            h2 { font-size: 1.1rem !important; }
+            .btn { font-size: 0.8rem !important; padding: 0.4rem 0.9rem !important; }
+            .btn-sm { font-size: 0.7rem !important; padding: 0.25rem 0.6rem !important; }
+            table { font-size: 0.75rem !important; }
+            th, td { padding: 0.4rem 0.5rem !important; }
+            th { font-size: 0.7rem !important; }
+            .badge { font-size: 0.65rem !important; padding: 0.1rem 0.5rem !important; }
+            .breadcrumb { font-size: 0.75rem !important; }
+            label { font-size: 0.8rem !important; }
+            .form-control, .input-field { font-size: 0.8rem !important; padding: 0.35rem 0.6rem !important; }
+            .container-fluid { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+            .alert { font-size: 0.8rem !important; padding: 0.6rem 0.8rem !important; }
+            .progress { height: 6px !important; }
+            nav a { font-size: 0.78rem !important; padding: 0.6rem 0.6rem !important; }
+            input, select, textarea { font-size: 16px !important; }
+        }
+
+        /* Mobile table → card */
+        @media (max-width: 767px) {
+            .table-responsive-card thead { display: none; }
+            .table-responsive-card tbody tr {
+                display: block; border: 1px solid #E5E7EB; border-radius: 8px;
+                padding: 0.75rem; margin-bottom: 0.75rem; background: white;
+            }
+            .table-responsive-card tbody td {
+                display: flex; justify-content: space-between; align-items: center;
+                padding: 0.35rem 0 !important; border: none; font-size: 0.8rem !important;
+            }
+            .table-responsive-card tbody td::before {
+                content: attr(data-label); font-weight: 600; color: #6B7280;
+                font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em;
+                margin-right: 0.5rem;
+            }
+        }
+
+        /* Scrollable table wrapper for mobile */
+        .table-scroll-mobile { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        @media (max-width: 767px) {
+            .table-scroll-mobile table { min-width: 500px; }
+            .card table, .overflow-x-auto table { min-width: 400px; }
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -59,7 +113,7 @@
 
         <!-- Navigation -->
         <nav class="bg-white border-b border-gray-200">
-            <div class="max-w-5xl mx-auto flex overflow-x-auto">
+            <div class="w-full flex overflow-x-auto px-3">
                 {% url 'enseignant:dashboard' as url_dash %}
                 <a href="{{ url_dash }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_dash %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Dashboard</a>
                 {% url 'enseignant:mon_qrcode' as url_qr %}
@@ -68,13 +122,15 @@
                 <a href="{{ url_pres }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_pres %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Présences</a>
                 {% url 'enseignant:mes_salaires' as url_sal %}
                 <a href="{{ url_sal }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_sal %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Salaires</a>
+                {% url 'notes_enseignant:liste_classes' as url_notes %}
+                <a href="{{ url_notes }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_notes %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Notes</a>
                 {% url 'enseignant:profil' as url_prof %}
                 <a href="{{ url_prof }}" class="whitespace-nowrap px-4 py-3 text-sm font-medium border-b-2 {% if request.path == url_prof %}border-primary text-primary{% else %}border-transparent text-gray-500 hover:text-primary{% endif %}">Profil</a>
             </div>
         </nav>
 
         <!-- Main content -->
-        <main class="flex-1 max-w-5xl mx-auto w-full p-4 md:p-6">
+        <main class="flex-1 w-full px-3 md:px-6 py-4 md:py-6 max-w-full" style="padding-bottom: 5.5rem;">
             {% if messages %}
             <div class="space-y-2 mb-4">
                 {% for message in messages %}

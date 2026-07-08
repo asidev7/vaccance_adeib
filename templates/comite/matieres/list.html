@@ -6,7 +6,7 @@
     <a href="{% url 'matieres:ajouter' %}" class="btn-primary text-sm">+ Ajouter</a>
 </div>
 <div class="card overflow-x-auto">
-    <table>
+    <div class="table-scroll-mobile"><table>
         <thead><tr><th>Nom</th><th>Niveau concerné</th><th>Couleur</th><th>Actions</th></tr></thead>
         <tbody>
             {% for m in matieres %}
@@ -23,6 +23,6 @@
             <tr><td colspan="4" class="text-gray-400 text-center py-8">Aucune matière.</td></tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 </div>
 {% endblock %}

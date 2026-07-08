@@ -1,32 +1,60 @@
 {% extends 'enseignant/base_enseignant.html' %}
 {% block title %}Dashboard — Enseignant ADEIB{% endblock %}
 {% block content %}
-<h1 class="text-2xl font-extrabold text-gray-900 mb-6">Bonjour, {{ user.first_name|default:user.username }} 👋</h1>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-    <div class="stat-card">
-        <div class="text-sm text-gray-500">Taux de présence</div>
-        <div class="text-2xl font-extrabold text-primary mt-1">{{ taux_presence|default:'—' }}%</div>
+<h1 class="text-xl md:text-2xl font-extrabold text-gray-900 mb-4 md:mb-6">Bonjour, {{ user.first_name|default:user.username }} 👋</h1>
+
+<!-- Stats cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+    <div class="stat-card p-3 md:p-5">
+        <div class="text-xs md:text-sm text-gray-500">Taux de présence</div>
+        <div class="text-xl md:text-2xl font-extrabold text-primary mt-1">{{ taux_presence|default:'—' }}%</div>
     </div>
-    <div class="stat-card">
-        <div class="text-sm text-gray-500">Heures effectuées</div>
-        <div class="text-2xl font-extrabold text-primary mt-1">{{ heures_effectuees|default:0 }}h</div>
+    <div class="stat-card p-3 md:p-5">
+        <div class="text-xs md:text-sm text-gray-500">Heures effectuées</div>
+        <div class="text-xl md:text-2xl font-extrabold text-primary mt-1">{{ heures_effectuees|default:0 }}h</div>
     </div>
-    <div class="stat-card">
-        <div class="text-sm text-gray-500">Solde salaire</div>
-        <div class="text-2xl font-extrabold text-green-600 mt-1">{{ solde_salaire|default:0 }} FCFA</div>
+    <div class="stat-card p-3 md:p-5">
+        <div class="text-xs md:text-sm text-gray-500">Solde salaire</div>
+        <div class="text-xl md:text-2xl font-extrabold text-green-600 mt-1">{{ solde_salaire|default:0 }} FCFA</div>
     </div>
 </div>
-<div class="card">
+
+<!-- Emploi du temps -->
+<div class="card p-4 md:p-6">
     <h2 class="font-bold text-gray-900 mb-3">Mon emploi du temps — Cette semaine</h2>
-    <div class="overflow-x-auto">
+
+    <!-- Mobile card view -->
+    <div class="block md:hidden space-y-3">
+        {% for c in emploi_du_temps %}
+        <div class="border border-gray-100 rounded-lg p-3">
+            <div class="flex justify-between items-start mb-2">
+                <div class="font-semibold text-sm">{{ c.get_jour_display }}</div>
+                <span class="text-xs text-gray-500">{{ c.heure_debut|time:"H:i" }}–{{ c.heure_fin|time:"H:i" }}</span>
+            </div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="inline-block w-2 h-2 rounded-full" style="background-color:{{ c.matiere.couleur_badge }}"></span>
+                <span class="text-sm font-medium">{{ c.matiere.nom }}</span>
+            </div>
+            <div class="flex justify-between text-xs text-gray-500">
+                <span>{{ c.niveau.nom }}</span>
+                <span>Salle {{ c.salle|default:'—' }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-gray-400 text-center py-4 text-sm">Aucun créneau programmé cette semaine.</div>
+        {% endfor %}
+    </div>
+
+    <!-- Desktop table -->
+    <div class="hidden md:block overflow-x-auto">
         <table>
             <thead><tr><th>Jour</th><th>Horaire</th><th>Matière</th><th>Niveau</th><th>Salle</th></tr></thead>
             <tbody>
                 {% for c in emploi_du_temps %}
                 <tr>
-                    <td class="font-medium">{{ c.get_jour_display }}</td>
-                    <td>{{ c.heure_debut|time:"H:i" }}–{{ c.heure_fin|time:"H:i" }}</td>
-                    <td><span class="badge" style="background-color:{{ c.matiere.couleur_badge }}20;color:{{ c.matiere.couleur_badge }}">{{ c.matiere.nom }}</span></td>
+                    <td class="font-medium whitespace-nowrap">{{ c.get_jour_display }}</td>
+                    <td class="whitespace-nowrap">{{ c.heure_debut|time:"H:i" }}–{{ c.heure_fin|time:"H:i" }}</td>
+                    <td><span class="badge text-xs" style="background-color:{{ c.matiere.couleur_badge }}20;color:{{ c.matiere.couleur_badge }}">{{ c.matiere.nom }}</span></td>
                     <td>{{ c.niveau.nom }}</td>
                     <td>{{ c.salle|default:'—' }}</td>
                 </tr>
@@ -37,4 +65,7 @@
         </table>
     </div>
 </div>
+
+<!-- Mobile bottom padding fix -->
+<div class="h-20 md:hidden"></div>
 {% endblock %}

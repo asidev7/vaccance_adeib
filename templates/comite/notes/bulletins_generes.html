@@ -1,0 +1,101 @@
+{% extends 'comite/base_comite.html' %}
+{% load static %}
+
+{% block title %}Bulletins générés{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'notes_comite:config_bulletins' %}">Configuration bulletins</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Bulletins générés</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-file-pdf text-primary"></i> Bulletins générés
+            </h2>
+            <p class="text-muted mb-0">Session : {% if session %}{{ session.nom }}{% else %}<span class="text-danger">Aucune session</span>{% endif %}</p>
+        </div>
+        <a href="{% url 'notes_comite:config_bulletins' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour
+        </a>
+    </div>
+
+    <!-- Filtre par classe -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Filtrer par classe</label>
+                    <select name="niveau" class="form-select" onchange="this.form.submit()">
+                        <option value="">Toutes les classes</option>
+                        {% for n in niveaux %}
+                            <option value="{{ n.id }}" {% if niveau_id|stringformat:"i" == n.id|stringformat:"i" %}selected{% endif %}>
+                                {{ n.nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">
+                <i class="fas fa-list text-primary me-1"></i>
+                {{ bulletins|length }} bulletin(s)
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <div class="table-scroll-mobile"><table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Élève</th>
+                            <th>Classe</th>
+                            <th>Session</th>
+                            <th>Généré le</th>
+                            <th>Par</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in bulletins %}
+                            <tr>
+                                <td><strong>{{ b.inscription.nom_eleve }} {{ b.inscription.prenom_eleve }}</strong></td>
+                                <td>{{ b.inscription.niveau.nom }}</td>
+                                <td>{{ b.session.nom }}</td>
+                                <td>{{ b.genere_le|date:"d/m/Y H:i" }}</td>
+                                <td>{{ b.genere_par.get_full_name|default:b.genere_par.username }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'notes_comite:telecharger_bulletin' b.id %}"
+                                       class="btn btn-sm btn-success">
+                                        <i class="fas fa-download me-1"></i> Télécharger
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <div class="display-6 mb-2"><i class="fas fa-file-pdf"></i></div>
+                                    <p>Aucun bulletin généré pour le moment.</p>
+                                    <a href="{% url 'notes_comite:config_bulletins' %}" class="btn btn-primary">
+                                        <i class="fas fa-cogs me-1"></i> Configurer
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'enseignant/base_enseignant.html' %}
+{% load static %}
+
+{% block title %}Mes classes — Notes{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <h2 class="mb-1">
+            <i class="fas fa-book-open text-primary"></i> Saisie des notes
+        </h2>
+        <p class="text-muted">
+            Session : <strong>{{ session.nom }}</strong> ({{ session.annee }})
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if classes %}
+        <div class="row g-4">
+            {% for c in classes %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="display-6 mb-3">
+                                <i class="fas fa-users text-primary"></i>
+                            </div>
+                            <h5 class="card-title">{{ c.niveau.nom }}</h5>
+                            <p class="text-muted mb-2">{{ c.niveau.get_cycle_display }}</p>
+                            <div class="d-flex justify-content-around mb-3">
+                                <div>
+                                    <small class="text-muted d-block">Effectif</small>
+                                    <strong>{{ c.effectif }}</strong>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Notés</small>
+                                    <strong>{{ c.notes_saisies }} élève(s)</strong>
+                                </div>
+                            </div>
+                            {% if c.saisie_ouverte %}
+                                <a href="{% url 'notes_enseignant:saisie_notes' c.niveau.id %}"
+                                   class="btn btn-primary w-100">
+                                    <i class="fas fa-edit me-1"></i> Saisir les notes
+                                </a>
+                            {% else %}
+                                <button class="btn btn-secondary w-100" disabled>
+                                    <i class="fas fa-lock me-1"></i> Saisie fermée
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="display-4 text-muted mb-3"><i class="fas fa-chalkboard-teacher"></i></div>
+            <h4>Aucune classe assignée</h4>
+            <p class="text-muted">
+                Vous n'intervenez dans aucune classe pour cette session.<br>
+                Contactez le comité si vous pensez qu'il s'agit d'une erreur.
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

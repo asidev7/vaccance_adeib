@@ -1,0 +1,135 @@
+{% extends 'comite/base_comite.html' %}
+{% load static %}
+
+{% block title %}Élèves — {{ niveau.nom }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'notes_comite:config_bulletins' %}">Configuration bulletins</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ niveau.nom }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-users text-primary"></i> Élèves — {{ niveau.nom }}
+            </h2>
+            <p class="text-muted mb-0">Session : {% if session %}{{ session.nom }}{% else %}<span class="text-danger">Aucune session</span>{% endif %}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'notes_comite:generer_bulletins' niveau.id %}" class="btn btn-success">
+                <i class="fas fa-file-pdf me-1"></i> Générer bulletins
+            </a>
+            <a href="{% url 'notes_comite:coefficients' niveau.id %}" class="btn btn-outline-primary">
+                <i class="fas fa-sliders-h me-1"></i> Coefficients
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Filtres -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Statut paiement</label>
+                    <select name="paiement" class="form-select" onchange="this.form.submit()">
+                        <option value="">Tous</option>
+                        <option value="PAYE" {% if statut_paiement == 'PAYE' %}selected{% endif %}>Payé</option>
+                        <option value="PARTIEL" {% if statut_paiement == 'PARTIEL' %}selected{% endif %}>Partiel</option>
+                        <option value="IMPAYE" {% if statut_paiement == 'IMPAYE' %}selected{% endif %}>Impayé</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">&nbsp;</label>
+                    <div>
+                        <a href="{% url 'notes_comite:liste_eleves_notes' niveau.id %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times"></i> Réinitialiser
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des élèves -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-list text-primary me-1"></i>
+                {{ inscriptions|length }} élève(s)
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <div class="table-scroll-mobile"><table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>N°</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Parent</th>
+                            <th class="text-center">Notes saisies</th>
+                            <th class="text-center">Moyenne</th>
+                            <th class="text-center">Paiement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in inscriptions %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><strong>{{ item.inscription.nom_eleve }}</strong></td>
+                                <td>{{ item.inscription.prenom_eleve }}</td>
+                                <td>{{ item.inscription.nom_parent }}</td>
+                                <td class="text-center">
+                                    {% if item.nb_notes > 0 %}
+                                        <span class="badge bg-success">{{ item.nb_notes }} matière(s)</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Aucune note</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.moyenne is not None %}
+                                        <strong>{{ item.moyenne }}/20</strong>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if item.inscription.statut_paiement == 'PAYE' %}
+                                        <span class="badge bg-success">Payé</span>
+                                    {% elif item.inscription.statut_paiement == 'PARTIEL' %}
+                                        <span class="badge bg-warning text-dark">Partiel</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Impayé</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <div class="display-6 mb-2"><i class="fas fa-users-slash"></i></div>
+                                    <p>Aucun élève inscrit dans cette classe.</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

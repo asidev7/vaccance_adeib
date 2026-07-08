@@ -20,7 +20,7 @@
     </form>
 </div>
 <div class="card overflow-x-auto">
-    <table>
+    <div class="table-scroll-mobile"><table>
         <thead><tr><th>Candidat</th><th>Téléphone</th><th>Niveau</th><th>Matières</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
         <tbody>
             {% for c in candidatures %}
@@ -39,6 +39,6 @@
             <tr><td colspan="7" class="text-gray-400 text-center py-8">Aucune candidature trouvée.</td></tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 </div>
 {% endblock %}

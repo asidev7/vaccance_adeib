@@ -1,0 +1,174 @@
+{% extends 'comite/base_comite.html' %}
+{% load static %}
+{% load notes_extras %}
+
+{% block title %}Configuration des bulletins{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <h2 class="mb-1">
+            <i class="fas fa-cogs text-primary"></i> Configuration des bulletins
+        </h2>
+        <p class="text-muted">
+            {% if session %}
+            Session active : <strong>{{ session.nom }}</strong> ({{ session.annee }})
+            {% else %}
+            <span class="text-danger">Aucune session configurée</span>
+            {% endif %}
+        </p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Configuration des classes -->
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save_config">
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-door-open text-primary me-1"></i>
+                    Ouverture / Fermeture par classe
+                </h5>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-save me-1"></i> Enregistrer
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <div class="table-scroll-mobile"><table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Classe</th>
+                                <th>Cycle</th>
+                                <th>Effectif</th>
+                                <th>Élèves notés</th>
+                                <th class="text-center">Saisie ouverte</th>
+                                <th class="text-center">Bulletin générable</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nc in niveaux_config %}
+                                <tr>
+                                    <td><strong>{{ nc.niveau.nom }}</strong></td>
+                                    <td>{{ nc.niveau.get_cycle_display }}</td>
+                                    <td>{{ nc.effectif }}</td>
+                                    <td>
+                                        {% if nc.notes_present > 0 %}
+                                            <span class="badge bg-success">{{ nc.notes_present }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="form-check form-switch d-inline-block">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="saisie_{{ nc.niveau.id }}"
+                                                   id="saisie_{{ nc.niveau.id }}"
+                                                   {% if nc.saisie_ouverte %}checked{% endif %}>
+                                            <label class="form-check-label" for="saisie_{{ nc.niveau.id }}">
+                                                {% if nc.saisie_ouverte %}
+                                                    <span class="text-success"><i class="fas fa-check-circle"></i> Ouvert</span>
+                                                {% else %}
+                                                    <span class="text-danger"><i class="fas fa-times-circle"></i> Fermé</span>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="form-check form-switch d-inline-block">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="bulletin_{{ nc.niveau.id }}"
+                                                   id="bulletin_{{ nc.niveau.id }}"
+                                                   {% if nc.bulletin_generable %}checked{% endif %}>
+                                            <label class="form-check-label" for="bulletin_{{ nc.niveau.id }}">
+                                                {% if nc.bulletin_generable %}
+                                                    <span class="text-success"><i class="fas fa-check-circle"></i> Oui</span>
+                                                {% else %}
+                                                    <span class="text-danger"><i class="fas fa-times-circle"></i> Non</span>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'notes_comite:saisie_notes_admin' nc.niveau.id %}"
+                                               class="btn btn-outline-warning"
+                                               title="Saisir/Modifier les notes">
+                                                <i class="fas fa-edit"></i> Notes
+                                            </a>
+                                            <a href="{% url 'notes_comite:coefficients' nc.niveau.id %}"
+                                               class="btn btn-outline-primary"
+                                               title="Gérer les coefficients">
+                                                <i class="fas fa-sliders-h"></i> Coef.
+                                            </a>
+                                            <a href="{% url 'notes_comite:liste_eleves_notes' nc.niveau.id %}"
+                                               class="btn btn-outline-info"
+                                               title="Voir les élèves">
+                                                <i class="fas fa-users"></i>
+                                            </a>
+                                            <a href="{% url 'notes_comite:generer_bulletins' nc.niveau.id %}"
+                                               class="btn btn-outline-success"
+                                               title="Générer les bulletins">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">
+                                        Aucune classe configurée. Créez d'abord des niveaux/classes.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table></div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Génération groupée -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-file-pdf text-primary me-1"></i>
+                Génération en masse
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <form method="post" action="{% url 'notes_comite:generer_tous_bulletins' %}" class="d-flex gap-2 align-items-end" onsubmit="return confirm('Générer les bulletins pour TOUS les élèves PAYÉS de toutes les classes ?');">
+                        {% csrf_token %}
+                        <div class="flex-grow-1">
+                            <label class="form-label fw-bold small">Message du Directeur (optionnel)</label>
+                            <input type="text" name="message_directeur" class="form-control form-control-sm" placeholder="Message pour tous les bulletins...">
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-file-pdf me-1"></i> Générer tous les bulletins (payés)
+                        </button>
+                    </form>
+                    <small class="text-muted">Génère les bulletins UNIQUEMENT pour les élèves ayant le statut "Payé".</small>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{% url 'notes_comite:bulletins_generes' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-1"></i> Voir bulletins générés
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

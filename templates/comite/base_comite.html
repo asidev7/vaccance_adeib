@@ -50,7 +50,91 @@
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 0.75rem; border-bottom: 2px solid #0048AE; color: #374151; font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; }
         td { padding: 0.75rem; border-bottom: 1px solid #E5E7EB; font-size: 0.875rem; }
-        tr:hover td { background-color: #F9FAFB; }
+        tr:hover td { background-color: #F0F4FF; }
+
+        /* Table stripe pour les lignes alternées */
+        tbody tr:nth-child(even) td { background-color: #F8FAFC; }
+        tbody tr:nth-child(even):hover td { background-color: #E8F0FE; }
+
+        /* === RESPONSIVE MOBILE === */
+        @media (max-width: 767px) {
+            .card { padding: 1rem; }
+            .stat-card { padding: 0.75rem 1rem; }
+            .stat-card .text-2xl { font-size: 1.25rem !important; }
+            h1 { font-size: 1.25rem !important; }
+            h2 { font-size: 1.1rem !important; }
+            h5 { font-size: 0.95rem !important; }
+            .btn { font-size: 0.8rem !important; padding: 0.4rem 0.9rem !important; }
+            .btn-sm { font-size: 0.7rem !important; padding: 0.25rem 0.6rem !important; }
+            table { font-size: 0.75rem !important; }
+            th, td { padding: 0.4rem 0.5rem !important; }
+            th { font-size: 0.7rem !important; }
+            .badge { font-size: 0.65rem !important; padding: 0.1rem 0.5rem !important; }
+            .breadcrumb { font-size: 0.75rem !important; }
+            .form-control, .form-select, .input-field { font-size: 0.8rem !important; padding: 0.35rem 0.6rem !important; }
+            label { font-size: 0.8rem !important; }
+            .table td, .table th { white-space: normal !important; word-break: break-word; }
+            .modal-dialog { margin: 0.5rem !important; }
+            .container-fluid { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+            .nav-tabs .nav-link { font-size: 0.75rem !important; padding: 0.4rem 0.6rem !important; }
+            .alert { font-size: 0.8rem !important; padding: 0.6rem 0.8rem !important; }
+            .progress { height: 6px !important; }
+            .btn-group .btn { font-size: 0.7rem !important; padding: 0.3rem 0.5rem !important; }
+            input[type="number"], input[type="text"], input[type="date"], input[type="time"], select, textarea {
+                font-size: 16px !important; /* Prevents iOS zoom */
+            }
+        }
+
+        /* Mobile table → card conversion for any table with .table-responsive-card */
+        @media (max-width: 767px) {
+            .table-responsive-card thead { display: none; }
+            .table-responsive-card tbody tr {
+                display: block;
+                border: 1px solid #E5E7EB;
+                border-radius: 8px;
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+                background: white;
+            }
+            .table-responsive-card tbody tr:hover td { background: transparent; }
+            .table-responsive-card tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.35rem 0 !important;
+                border: none;
+                font-size: 0.8rem !important;
+            }
+            .table-responsive-card tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #6B7280;
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                margin-right: 0.5rem;
+            }
+            .table-responsive-card tbody td:last-child { border-bottom: none; }
+            .table-responsive-card tbody tr + tr { border-top: none; }
+        }
+
+        /* Scrollable table wrapper for mobile — auto-apply to all tables in cards */
+        .table-scroll-mobile { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        @media (max-width: 767px) {
+            .table-scroll-mobile table { min-width: 500px; }
+            .card table, .overflow-x-auto table { min-width: 400px; }
+            .card > table, .card .table-responsive > table { min-width: 400px; }
+        }
+
+        /* Better mobile bottom nav */
+        @media (max-width: 767px) {
+            .bottom-nav-link { padding: 0.4rem 0.2rem !important; font-size: 0.55rem !important; }
+            .bottom-nav-link svg { width: 18px !important; height: 18px !important; }
+            main { padding-bottom: 6rem !important; }
+        }
+
+        /* Underline active bottom nav */
+        .bottom-nav-link.active { color: #0048AE; border-top: 2px solid #0048AE; }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -126,6 +210,13 @@
                 <a href="{{ url_rapports }}" class="sidebar-link {% if url_rapports in request.path %}active{% endif %}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     Rapports
+                </a>
+                {% endif %}
+                {% if user.is_staff_comite %}
+                {% url 'notes_comite:config_bulletins' as url_bulletins %}
+                <a href="{{ url_bulletins }}" class="sidebar-link {% if url_bulletins in request.path %}active{% endif %}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Notes &amp; Bulletins
                 </a>
                 {% endif %}
             </nav>

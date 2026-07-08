@@ -6,7 +6,7 @@
     <a href="{% url 'salaires:calculer' %}" class="btn-primary text-sm">🧮 Calculer les salaires</a>
 </div>
 <div class="card overflow-x-auto">
-    <table>
+    <div class="table-scroll-mobile"><table>
         <thead><tr><th>Enseignant</th><th>Session</th><th>Heures</th><th>Taux</th><th>Brut</th><th>Versé</th><th>Statut</th><th>Actions</th></tr></thead>
         <tbody>
             {% for s in salaires %}
@@ -27,6 +27,6 @@
             <tr><td colspan="8" class="text-gray-400 text-center py-8">Aucun salaire calculé. <a href="{% url 'salaires:calculer' %}" class="text-primary font-semibold hover:underline">Lancer le calcul</a></td></tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 </div>
 {% endblock %}

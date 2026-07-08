@@ -38,7 +38,7 @@
 </div>
 <!-- Table -->
 <div class="card overflow-x-auto">
-    <table>
+    <div class="table-scroll-mobile"><table>
         <thead><tr><th>Élève</th><th>Niveau</th><th>Parent</th><th>Téléphone</th><th>Montant dû</th><th>Payé</th><th>Statut</th><th>Actions</th></tr></thead>
         <tbody>
             {% for i in inscriptions %}
@@ -58,6 +58,6 @@
             <tr><td colspan="8" class="text-gray-400 text-center py-8">Aucune inscription trouvée.</td></tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table></div>
 </div>
 {% endblock %}
